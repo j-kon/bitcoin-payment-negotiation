@@ -13,7 +13,7 @@ We welcome contributions from researchers, wallet developers, protocol designers
 3. **Privacy & Security Analysis**:
    - Submitting potential attack vectors, information leaks, or fingerprinting techniques related to capability negotiation or selection.
 4. **Threat-Model Corrections**:
-   - Critiquing, expanding, or refining the entries in our [threat-model.md](file:///Users/jaykon/Developer/open-source/bitcoin-payment-negotiation/research/threat-model.md).
+   - Critiquing, expanding, or refining the entries in our [threat-model.md](research/threat-model.md).
 5. **Arguments Against Standardization**:
    - Providing reasoned technical arguments explaining why coordination or new standards might be unnecessary, harmful, or better handled purely at the local wallet UX level.
 6. **Reproducible Interoperability Failures**:
@@ -38,7 +38,7 @@ When contributing text to the research documents, you must explicitly distinguis
 
 ### 3. Maintain Cautious and Precise Jargon
 - Avoid marketing language (e.g., "revolutionary", "game-changing", "universal").
-- Apply terminology strictly as defined in [terminology.md](file:///Users/jaykon/Developer/open-source/bitcoin-payment-negotiation/research/terminology.md). Specifically, do not use "selection" and "negotiation" interchangeably.
+- Apply terminology strictly as defined in [terminology.md](research/terminology.md). Specifically, do not use "selection" and "negotiation" interchangeably.
 - Do not imply endorsement from Bitcoin developers or organizations.
 
 ## Pull Request Guidelines

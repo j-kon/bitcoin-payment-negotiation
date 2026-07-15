@@ -46,7 +46,7 @@ We follow these ten sequential steps to evaluate our hypotheses:
 > [!IMPORTANT]
 > **No novelty claim shall be made in this project without a documented prior-art search.**
 > 
-> Before claiming that a problem is "unsolved," a concept is "new," or a design is "original," contributors must search existing standards, mailing lists (e.g., Bitcoin-dev, Lightning-dev), and open-source project issue trackers. The findings of this search must be added to [prior-art.md](file:///Users/jaykon/Developer/open-source/bitcoin-payment-negotiation/research/prior-art.md) with direct source links.
+> Before claiming that a problem is "unsolved," a concept is "new," or a design is "original," contributors must search existing standards, mailing lists (e.g., Bitcoin-dev, Lightning-dev), and open-source project issue trackers. The findings of this search must be added to [prior-art.md](prior-art.md) with direct source links.
 
 ### Falsifiability
 All research papers and problem statements must conclude with falsifiable research questions. We do not design solutions for speculative problems; we must first demonstrate that the problem exists and causes tangible issues for users or developers.

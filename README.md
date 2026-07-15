@@ -105,11 +105,11 @@ bitcoin-payment-negotiation/
 
 ## How to Contribute
 
-We welcome technical reviews, prior-art references, threat model critiques, and implementation feedback. Please read [CONTRIBUTING.md](file:///Users/jaykon/Developer/open-source/bitcoin-payment-negotiation/CONTRIBUTING.md) to understand how to format and submit your contributions.
+We welcome technical reviews, prior-art references, threat model critiques, and implementation feedback. Please read [CONTRIBUTING.md](CONTRIBUTING.md) to understand how to format and submit your contributions.
 
 ## Prior-Art Notice
 
-We have not yet identified a common cross-protocol specification addressing this exact combination of payment-method selection and negotiation concerns. Please refer to [prior-art.md](file:///Users/jaykon/Developer/open-source/bitcoin-payment-negotiation/research/prior-art.md) for details on existing standards and how they relate to this project.
+We have not yet identified a common cross-protocol specification addressing this exact combination of payment-method selection and negotiation concerns. Please refer to [prior-art.md](research/prior-art.md) for details on existing standards and how they relate to this project.
 
 ## Project Status
 
@@ -117,4 +117,4 @@ This project is currently in the **exploratory research phase**. No protocol sch
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](file:///Users/jaykon/Developer/open-source/bitcoin-payment-negotiation/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

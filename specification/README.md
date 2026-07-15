@@ -5,7 +5,7 @@ Currently, **no specification exists** in this directory.
 ## Purpose of this Directory
 
 This directory is reserved for future draft specifications or schemas *only if*:
-1. The exploratory research in [research/](file:///Users/jaykon/Developer/open-source/bitcoin-payment-negotiation/research/) demonstrates a genuine, reproducible interoperability or privacy problem.
+1. The exploratory research in [research/](../research/) demonstrates a genuine, reproducible interoperability or privacy problem.
 2. Community feedback, peer review, and wallet developers support the necessity of standardization.
 3. The proposed design is shown to be downgrade-resistant, fingerprint-resistant, and compatible with existing standards like BIP 321.
 
