@@ -5,12 +5,12 @@ This document compiles outstanding questions identified during our exploratory p
 ---
 
 ## 1. Standards & Specifications
-- **Can existing BIP 321 fields support the required behaviour?** Can we express receiver preferences or requirements using existing URI key-value structures without breaking backward compatibility? Note that no "on-chain-first" or "Lightning-first" preference field is currently defined in BIP 321.
-- **Is a new transport mechanism unnecessary?** Can all negotiation and selection occur using existing layers (e.g., DNS, HTTP, Lightning onion messages) rather than defining a custom network transport?
+- **How do different sender-wallet policies behave when a payment request contains several supported instructions but provides no standardized priority signal?** How does a client resolve conflicts when both parties support multiple options?
+- **Is a new transport mechanism unnecessary?** Can all negotiation and selection occur using existing layers (e.g., DNS, HTTP, Lightning onion messages) rather than defining a custom network transport? Note that local selection itself does not require a network transport, as it is executed entirely on the client side using the provided payment URI details.
 - **Should the receiver express preferences, requirements, or both?** How should a payment request distinguish between "I prefer method X but support Y" and "I require method Z"?
 
 ## 2. Privacy
-- **Can payment selection occur without exposing wallet identity?** How can a wallet select or negotiate a payment method without leaking its software brand, version, or config settings (fingerprinting)?
+- **Can payment selection occur without exposing wallet identity?** How can a wallet select or negotiate a payment method without leaking its software brand, version, or config settings (measurable fingerprinting)?
 - **Should wallets communicate explicit capabilities?** Does disclosing a list of supported features to a merchant server during negotiation constitute an unacceptable privacy risk?
 - **Can capability disclosure be strictly request-scoped?** If a wallet must disclose capabilities, can that disclosure be limited to the immediate transaction context without leaking broader wallet properties?
 
