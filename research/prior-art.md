@@ -1,140 +1,124 @@
 # Prior-Art Review Framework
 
-This document catalogs existing Bitcoin payment standards, protocols, and implementation practices. We examine each standard's capabilities, payment details, and how (or if) it addresses payment-method selection and negotiation.
+This document catalogs and reviews existing Bitcoin payment standards, specifications, and observed wallet implementations. It examines how these protocols handle multiple payment instructions and method selection.
 
-> **Research Finding:** We have not yet identified a common cross-protocol specification addressing this exact combination of concerns.
+> **Research Finding:** We have not yet identified a common cross-protocol specification addressing this exact combination of payment-method selection and negotiation concerns. This is classified as a **research inference**.
 
 ---
 
 ## Existing Protocols & Standards
 
 ### BIP 21 (URI Scheme)
-- **Direct Source Link**: [BIP 21 Specification](https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki)
-- **What problem it solves**: Standardizes a URI scheme for designating a Bitcoin destination address, an amount, and optional label/message fields.
-- **What payment information it communicates**: A single on-chain address, requested amount, label, and message. It also allows arbitrary query parameters (e.g., `lightning=lnbc...`).
-- **Supports multiple methods**: No natively, but in practice, custom query parameters (e.g., adding `lightning=` or `sp=`) are appended to represent multiple payment options within a single string.
-- **Defines method selection**: No. It does not provide rules for how a wallet chooses between the base address and the parameter-based methods.
-- **Communicates sender preferences**: No.
-- **Communicates receiver preferences**: No, though the base address is sometimes assumed to be the primary option.
-- **Privacy implications**: Minimal local privacy; reuse of the single on-chain address leaks receiver identity. Adding static lightning parameters can also create tracking vectors.
-- **Downgrade considerations**: If a sender doesn't support the optional query parameter, they fall back to the base on-chain address. An intermediary can strip query parameters to force on-chain payment.
-- **Relevance to this project**: It is the historical basis for multi-method payment strings.
+- **Primary Source**: [BIP 21 Specification](https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki)
+- **Specification Status**: Standard / Final.
+- **What is directly specified**: A standard URI scheme for representing a single Bitcoin destination address, an amount, and optional label/message parameters.
+- **What is not specified**: Does not specify representation of multiple alternative payment methods or selection logic.
+- **Known implementation evidence**: Supported by virtually all Bitcoin wallets (e.g., BlueWallet, Phoenix, Nunchuk).
+- **Relevance to selection**: Historical baseline. In practice, developers append query parameters (such as `lightning=lnbc...`) to package options, but this is a **research inference** as it is not standardized in the BIP 21 document itself.
+- **Remaining uncertainty**: None on the core spec.
 
 ### BIP 321 (Payment Request URI)
-- **Direct Source Link**: [BIP 321 Specification](https://github.com/bitcoin/bips/blob/master/bip-0321.mediawiki)
-- **What problem it solves**: Standardizes the serialization of one or more payment instructions (including multiple outputs) into a single URI, extending BIP 21.
-- **What payment information it communicates**: Multiple distinct outputs (addresses, amounts), labels, messages, and arbitrary parameter fields across indexed groups.
-- **Supports multiple methods**: Yes, via multiple payment instructions serialized in index parameters (e.g., `address`, `address.1`, `address.2`).
-- **Defines method selection**: No. The specification focuses on parsing and formatting, leaving selection logic to the client wallet.
-- **Communicates sender preferences**: No.
-- **Communicates receiver preferences**: No explicit ordering or preference weight is defined by the standard.
-- **Privacy implications**: Similar to BIP 21, but carrying multiple addresses allows a receiver to potentially correlate different addresses if they are scanned.
-- **Downgrade considerations**: Intermediaries can intercept and strip indexed parameters, potentially removing newer/more private payment methods and forcing the wallet to use the base on-chain address.
-- **Relevance to this project**: BIP 321 is the primary vehicle for representing multi-instruction payments in our scope.
+- **Primary Source**: [BIP 321 Specification](https://github.com/bitcoin/bips/blob/master/bip-0321.mediawiki)
+- **Specification Status**: Complete.
+- **What is directly specified**: Standardizes the serialization of one or more payment instructions into a single URI. It defines the path component as a Bitcoin address, and query parameters for payment instructions (`lightning` for BOLT 11, `lno` for BOLT 12, `pay` for BIP 351, `sp` for BIP 352). It allows multiple query parameters with the same key for payment instructions. It specifies the use of `req-` prefix for mandatory parameters (if a client doesn't support a `req-` parameter, it MUST consider the URI invalid).
+- **What is not specified**: Selection behavior is **directly specified by a protocol** to be left entirely unspecified. BIP 321 defines formatting and parsing but explicitly leaves selection logic to the client. No ordering, priority, or preference semantics are defined.
+- **Correction regarding indexing**: In previous documentation, it was claimed that BIP 321 indexes (e.g., `address.1`, `address.2`, `amount.1`) represent alternative rails. This is **incorrect** and is corrected here as a **directly specified** protocol rule: BIP 321 indexing represents *multiple outputs intended to be paid simultaneously in a single transaction*, not mutually exclusive options. Alternative rails are represented as distinct query parameter keys (e.g., `lno` and `sp`).
+- **Known implementation evidence**: Standard libraries like `rust-bitcoin`'s `bip21` crate or Dart payment parsers decode these parameters, but leave selection to the app.
+- **Relevance to selection**: It is the primary transport/representation format for multi-instruction payloads.
+- **Remaining uncertainty**: How wallets behave when encountering unrecognized query keys prefixed with `req-` vs. ignoring standard unknown keys.
 
 ### BIP 353 (DNS Payment Instructions)
-- **Direct Source Link**: [BIP 353 Specification](https://github.com/bitcoin/bips/blob/master/bip-0353.mediawiki)
-- **What problem it solves**: Resolves human-readable identifiers (e.g., `user@domain.com`) to standard Bitcoin payment URIs via DNS TXT records.
-- **What payment information it communicates**: A BIP 21 or BIP 321 URI containing the actual payment instructions (on-chain addresses, BOLT 12 offers, Silent Payments).
-- **Supports multiple methods**: Indirectly, by returning a URI that may contain multiple methods.
-- **Defines method selection**: No. It defers all selection logic to the wallet parsing the returned URI.
-- **Communicates sender preferences**: No.
-- **Communicates receiver preferences**: No.
-- **Privacy implications**: Resolving via DNS can leak the payer's IP address and query target to the DNS resolver or name servers, though DNSSEC, DoH/DoT mitigate some third-party eavesdropping.
-- **Downgrade considerations**: A malicious DNS server or resolver can manipulate the TXT record to remove specific payment options.
-- **Relevance to this project**: BIP 353 represents a key discovery mechanism for multi-instruction payment payloads.
+- **Primary Source**: [BIP 353 Specification](https://github.com/bitcoin/bips/blob/master/bip-0353.mediawiki)
+- **Specification Status**: Active / Draft.
+- **What is directly specified**: Resolution of human-readable identifiers (e.g., `user@domain.com`) to standard BIP 21/321 payment URIs via DNS TXT records.
+- **What is not specified**: Does not define how the wallet selects between the methods contained in the returned URI.
+- **Known implementation evidence**: Resolving DNSSEC-validated TXT records in supporting wallets (e.g., Phoenix).
+- **Relevance to selection**: Translates human-readable names to multi-rail URIs.
+- **Remaining uncertainty**: The timing correlation vectors between DNS queries and subsequent transaction broadcasts is an **open question**.
 
 ### BOLT 11 (Lightning Invoice)
-- **Direct Source Link**: [BOLT 11 Specification](https://github.com/lightning/bolts/blob/master/11-payment-encoding.md)
-- **What problem it solves**: Standardizes payment requests over the Lightning Network, securing payments using hashes of preimages.
-- **What payment information it communicates**: Node ID, payment hash, amount, expiry, description, and routing hints.
-- **Supports multiple methods**: No. It represents a single, ephemeral Lightning invoice.
-- **Defines method selection**: N/A (single method).
-- **Communicates sender preferences**: N/A.
-- **Communicates receiver preferences**: N/A.
-- **Privacy implications**: Reveals the receiver's node ID (for public nodes) or path hints (revealing private channel peers).
-- **Downgrade considerations**: N/A.
-- **Relevance to this project**: A primary off-chain payment instruction.
+- **Primary Source**: [BOLT 11 Specification](https://github.com/lightning/bolts/blob/master/11-payment-encoding.md)
+- **Specification Status**: Complete / Active.
+- **What is directly specified**: Serialization of single-use, receiver-generated ephemeral payment requests over the Lightning Network.
+- **What is not specified**: Multi-method packaging or fallback logic.
+- **Known implementation evidence**: Ubiquitous across Lightning wallets.
+- **Relevance to selection**: Represents a primary off-chain payment instruction.
+- **Remaining uncertainty**: None.
 
 ### BOLT 12 (Lightning Offers)
-- **Direct Source Link**: [BOLT 12 Specification](https://github.com/lightning/bolts/blob/master/12-offer-encoding.md)
-- **What problem it solves**: Introduces reusable, static payment requests ("offers") that allow payers to request a custom, ephemeral invoice directly from the receiver over the Lightning Network.
-- **What payment information it communicates**: Node ID or public key, supported chains, payment descriptions, and recurrence info.
-- **Supports multiple methods**: No. It is specific to the BOLT 12 interactive invoice acquisition flow.
-- **Defines method selection**: N/A.
-- **Communicates sender preferences**: No.
-- **Communicates receiver preferences**: No.
-- **Privacy implications**: More private than BOLT 11 as invoices are fetched dynamically via onion routing, hiding the sender's node ID.
-- **Downgrade considerations**: If the interactive path fails, the wallet has no direct fallback unless other instructions are bundled.
-- **Relevance to this project**: A major interactive off-chain payment instruction.
+- **Primary Source**: [BOLT 12 Specification](https://github.com/lightning/bolts/blob/master/12-offer-encoding.md)
+- **Specification Status**: Draft / Active.
+- **What is directly specified**: Static, reusable payment requests ("offers") that allow a payer to request an ephemeral invoice from the receiver. It specifies the use of onion messages with transient keys for the `invoice_request` flow.
+- **What is not specified**: Selection or negotiation between BOLT 12 and on-chain rails.
+- **Known implementation evidence**: Core Lightning (CLN) natively supports BOLT 12. Phoenix wallet supports sending to BOLT 12 offers.
+- **Sender Privacy**: The protocol specifies that invoice requests use onion routing and transient keys, meaning the payer's node public key is not disclosed to the receiver. This is **directly specified**. However, whether network observers can correlate node identities via timing analysis remains an **open question**.
+- **Remaining uncertainty**: Robustness of onion routing paths for asynchronous invoice delivery.
 
 ### Payjoin (BIP 78) & Payjoin v2
-- **Direct Source Links**: [BIP 78 Specification](https://github.com/bitcoin/bips/blob/master/bip-0078.mediawiki) | [Payjoin Dev Repo](https://github.com/payjoin/rust-payjoin)
-- **What problem it solves**: Mitigates blockchain analysis heuristics by facilitating collaborative, privacy-enhancing on-chain transactions where both sender and receiver contribute inputs. Payjoin v2 extends this to asynchronous and serverless environments.
-- **What payment information it communicates**: Endpoint URLs for negotiation, payment amounts, and accepted transaction parameters.
-- **Supports multiple methods**: No. It is an on-chain collaboration protocol.
-- **Defines method selection**: N/A.
-- **Communicates sender preferences**: No.
-- **Communicates receiver preferences**: No.
-- **Privacy implications**: Greatly improves on-chain privacy by breaking the common-input ownership heuristic. However, the sender must communicate directly with the receiver's server, leaking the sender's IP address (unless routed through Tor/VPN).
-- **Downgrade considerations**: BIP 78 specifies a fallback to standard on-chain payments if the HTTP endpoint fails to respond or errors. A network attacker can block the Payjoin endpoint to force a downgrade to standard on-chain.
-- **Relevance to this project**: Represents a high-privacy, interactive on-chain payment method.
+- **Primary Source**: [BIP 78 Specification](https://github.com/bitcoin/bips/blob/master/bip-0078.mediawiki) | [Payjoin Dev Repo](https://github.com/payjoin/rust-payjoin)
+- **Specification Status**: Active / Standard.
+- **What is directly specified**: BIP 78 specifies collaborative on-chain transaction construction. It **directly specifies** that if the Payjoin HTTP session fails, the wallet MUST fall back to a standard on-chain transaction. Payjoin v2 specifies asynchronous/receiver-serverless setups using relays (like Nostr or TURN).
+- **What is not specified**: Selection between Payjoin and off-chain protocols (like Lightning).
+- **Known implementation evidence**: Supported in Sparrow, Wasabi, BTCPay Server, and BlueWallet.
+- **Downgrade resistance**: Under BIP 78, falling back to a standard transaction on HTTP failure is **directly specified**. However, the fact that an attacker can block the HTTP endpoint to force a downgrade is a **research inference**.
+- **Payjoin v2 framing**: The protocol specifies a receiver-serverless model where the receiver doesn't host an HTTPS endpoint. However, it relies on public relays/TURN proxies to route traffic, which is a **research inference**.
+- **Remaining uncertainty**: Relay uptime and vulnerability to message blocking.
 
 ### Silent Payments (BIP 352)
-- **Direct Source Link**: [BIP 352 Specification](https://github.com/bitcoin/bips/blob/master/bip-0352.mediawiki)
-- **What problem it solves**: Standardizes static, reusable on-chain donation addresses that prevent blockchain observers from linking transactions to the recipient's identity.
-- **What payment information it communicates**: Scan public key and spend public key.
-- **Supports multiple methods**: No.
-- **Defines method selection**: N/A.
-- **Communicates sender preferences**: N/A.
-- **Communicates receiver preferences**: N/A.
-- **Privacy implications**: Excellent on-chain privacy for the receiver. The sender must perform Elliptic Curve Diffie-Hellman (ECDH) calculations using their transaction inputs to generate the unique destination script.
-- **Downgrade considerations**: If a wallet does not support Silent Payments, it falls back to other methods present in a URI, exposing the receiver's standard addresses to linkage if those are used instead.
-- **Relevance to this project**: Represents a high-privacy, non-interactive on-chain payment method.
+- **Primary Source**: [BIP 352 Specification](https://github.com/bitcoin/bips/blob/master/bip-0352.mediawiki)
+- **Specification Status**: Complete.
+- **What is directly specified**: Non-interactive on-chain addresses that prevent public linkage. Senders generate unique destinations using recipient keys and their own input UTXOs.
+- **What is not specified**: Selection between Silent Payments and other methods.
+- **Known implementation evidence**: Cake Wallet, Silentium.
+- **Relevance to selection**: Highly private on-chain option.
+- **Remaining uncertainty**: Computational scan latency on mobile wallets is an **open question**.
 
 ### LNURL Pay & Lightning Address
-- **Direct Source Links**: [LNURL Specification](https://github.com/lnurl/luds) | [Lightning Address](https://lightningaddress.com/)
-- **What problem it solves**: Uses HTTP requests to dynamically fetch BOLT 11 invoices, allowing static QR codes and email-like identifiers to represent Lightning destinations.
-- **What payment information it communicates**: HTTP endpoints, min/max sendable amounts, metadata, and success actions.
-- **Supports multiple methods**: No. It is designed to yield a BOLT 11 invoice.
-- **Defines method selection**: N/A.
-- **Communicates sender preferences**: No.
-- **Communicates receiver preferences**: No.
-- **Privacy implications**: The sender makes an HTTP request to the receiver's web server, leaking IP addresses, timing info, and payment metadata to the server operator.
-- **Downgrade considerations**: If the server is offline, the payment fails immediately.
-- **Relevance to this project**: A widely deployed interactive off-chain resolution mechanism.
+- **Primary Source**: [LNURL Specs (LUDs)](https://github.com/lnurl/luds)
+- **Specification Status**: De facto standard.
+- **What is directly specified**: Protocol for fetching BOLT 11 invoices via HTTP requests to a web server.
+- **What is not specified**: Direct selection or negotiation.
+- **Known implementation evidence**: Widely deployed in custodial and non-custodial Lightning wallets (e.g., Wallet of Satoshi, BlueWallet).
+- **Privacy implications**: Resolving LNURL leaks IP address and payment metadata to the server. This is a **research inference**.
+- **Remaining uncertainty**: Long-term interoperability as BOLT 12 and BIP 353 gain traction.
 
 ### Nostr Wallet Connect (NWC)
-- **Direct Source Link**: [NIP-47 Specification](https://github.com/nostr-protocol/nips/blob/master/47.md)
-- **What problem it solves**: Standardizes how external applications (clients) communicate commands (like sending or receiving payments) to a user's wallet via the Nostr relay network.
-- **What payment information it communicates**: Connection URIs, commands (pay_invoice, make_invoice), and execution statuses.
-- **Supports multiple methods**: No. It is a control protocol, not a direct payment request.
-- **Defines method selection**: N/A.
-- **Communicates sender preferences**: N/A.
-- **Communicates receiver preferences**: N/A.
-- **Privacy implications**: Commands travel through Nostr relays; encryption protects payload contents, but relay metadata (IPs, timing, public keys) may be visible.
-- **Downgrade considerations**: N/A.
-- **Relevance to this project**: Illustrates a message-based transport model that could theoretically carry negotiation messages.
+- **Primary Source**: [NIP-47 Specification](https://github.com/nostr-protocol/nips/blob/master/47.md)
+- **Specification Status**: Draft.
+- **What is directly specified**: A relay-based protocol utilizing Nostr to send wallet commands (like paying invoices).
+- **What is not specified**: Payment instruction selection.
+- **Known implementation evidence**: Alby, Mutiny Wallet (historical).
+- **Relevance to selection**: Example of a relay-based interactive transport.
+- **Remaining uncertainty**: Metadata leakage across public Nostr relays.
 
 ---
 
-## Unified QR & Multi-Payment Libraries
+## Wallet Selection Behaviour (Generalizations Audited)
 
-### Multi-Payment QR Approaches
-Many wallets generate unified QR codes containing a BIP 21 URI with appended parameters (e.g., `bitcoin:address?lightning=lnbc...`). 
-- **Selection Behaviour**: Most wallets prioritize the Lightning parameter if supported, falling back to on-chain only if the Lightning invoice fails to parse, is expired, or if the wallet has insufficient channel liquidity.
-- **Coordination**: There is no standard coordination; some wallets automatically pay the Lightning invoice without presenting choices, while others ask the user.
+### Lightning vs On-chain Selection Heuristic
+- **Statement**: "Wallets prioritize Lightning over on-chain when both are present."
+- **Audit**: This is an **observed behavior** in named implementations (Phoenix and BlueWallet), which automatically load and select the Lightning/BOLT 12 instruction over the on-chain address. However, generalizing this to "most wallets" is an **unverified assumption**.
 
-### Payment Parsing Libraries
-Libraries like `bip21` (JavaScript), `rust-bitcoin`'s BIP 21 parser, and similar Dart/Flutter libraries decode URIs but do not enforce selection policies. They expose parsed key-value maps to the wallet application layer, shifting the entire selection burden to custom application-level logic.
+### Intermediary Parameter Stripping
+- **Statement**: "An intermediary can strip parameters to force a downgrade."
+- **Audit**: This is a **research inference** based on the fact that BIP 21/321 URIs are often transmitted via QR codes, text, or cleartext protocols, which lack integrity validation unless encapsulated in secure protocols (like TLS or BIP 322 signatures).
+
+### Fallback Mechanics
+- **Statement**: "Wallets automatically fall back to on-chain."
+- **Audit**: Under BIP 78, fallback to standard on-chain payments upon HTTP failure is **directly specified**. However, fallback from a failed Lightning routing attempt to on-chain is not specified in any standard and is purely a **client-side wallet policy**.
 
 ---
 
-## Evidence That Would Invalidate the Research Hypothesis
+## Research Evidence & Confidence Table
 
-Our working hypothesis is that *defining an interoperable framework for payment-method selection and negotiation is necessary to prevent fingerprinting and downgrade attacks.*
-
-The following evidence would invalidate this hypothesis:
-1. **Existing Unified Specifications**: The discovery of an active, peer-reviewed standard that already defines a secure, private, cross-protocol capability negotiation mechanism for Bitcoin.
-2. **Universal Client-Side Sufficiency**: Empirical proof that local-only wallet heuristics (e.g., choosing purely based on fee/privacy thresholds without receiver interaction or capability disclosure) can prevent downgrade attacks and fingerprinting without any coordination.
-3. **Impossibility of Private Selection**: Mathematical or cryptographic proof showing that any form of capability negotiation or selection inevitably leaks more identity metrics (fingerprinting) than a basic static fallback scheme.
+| Claim / Behaviour | Evidence Type | Source Reference | Confidence | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| BIP 321 indexes (`address.1`) represent multi-output payments, not alternative choices | Directly specified | [BIP 321 Spec](https://github.com/bitcoin/bips/blob/master/bip-0321.mediawiki) | Confirmed by specification | A crucial correction of the previous documentation's framing. |
+| BIP 78 requires standard on-chain fallback if the HTTP session fails | Directly specified | [BIP 78 Section: Fallback](https://github.com/bitcoin/bips/blob/master/bip-0078.mediawiki) | Confirmed by specification | Standard protocol behavior. |
+| BOLT 12 invoice requests hide the sender's node ID using onion routing transient keys | Directly specified | [BOLT 12 Specification](https://github.com/lightning/bolts/blob/master/12-offer-encoding.md) | Confirmed by specification | Built-in protocol privacy property. |
+| Phoenix and BlueWallet default to Lightning when parsing a unified BIP 21 URI | Observed in implementation | Phoenix/BlueWallet client behavior | Confirmed by implementation | Empirically verified in these specific clients. |
+| Intermediaries can strip query parameters to execute downgrade attacks | Research inference | Threat model analysis | Reasonable inference | Standard security property of unsigned cleartext payloads. |
+| DNS resolution of BIP 353 leaks timing data that correlates to settlement | Research inference | Privacy analysis | Reasonable inference | A known traffic analysis vector. |
+| Silent Payments scanning introduces high CPU latency on low-power devices | Research inference | Performance discussions | Reasonable inference | Discussed in BIP 352 implementation reviews. |
+| Most wallets in the ecosystem default to prioritizing Lightning over on-chain | Unverified assumption | Ecosystem observation | Unverified | Requires broader implementation matrix data to confirm. |
+| Payjoin v2 is completely serverless | Unverified assumption | Payjoin v2 concept | Unverified | Technically incorrect; it is receiver-serverless but requires Nostr/TURN relays. |
