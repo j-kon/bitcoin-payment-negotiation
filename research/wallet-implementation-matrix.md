@@ -1,22 +1,29 @@
 # Wallet Implementation Matrix
 
-This matrix maps out supported payment methods and selection behaviors across various Bitcoin wallets. 
+This matrix maps out supported payment methods and selection behaviors across various Bitcoin wallets.
 
-To maintain scientific integrity:
-- We only populate cells where **authoritative evidence** (wallet source code, official release notes, or empirical tests) is available.
-- All other cells are marked as **Unknown** or **Not yet investigated**.
-- We invite contributors to help fill this matrix by opening issues with supporting references.
+> [!IMPORTANT]
+> **Evidence Policy**: Absence of evidence is not evidence of non-support. A feature is marked Unsupported only when official documentation or source code explicitly establishes non-support.
 
 ---
 
-## Matrix
+## Active Investigations
 
-| Wallet | On-chain | BOLT 11 | BOLT 12 | BIP 321 | Payjoin | Silent Payments | Multi-method selection behaviour | Evidence |
+| Wallet | On-chain | BOLT 11 | BOLT 12 | BIP 321 | Payjoin | Silent Payments | Multi-method selection behaviour | Evidence strength | Evidence / Source Links |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Phoenix** | Confirmed | Confirmed | Confirmed | Confirmed | Unknown | Unknown | Parser preserves the on-chain address and optional BOLT 11/BOLT 12 instruction. The inspected SendManager returns a URI result when the on-chain address is present. Final UI selection behavior has not yet been fully traced. | Source-code trace | [Phoenix Parser.kt](https://github.com/ACINQ/phoenix/blob/3749b0817d60b0a17a97d21338e2d9038efb2d9e/phoenix-shared/src/commonMain/kotlin/fr.acinq.phoenix/utils/Parser.kt) and [SendManager.kt](https://github.com/ACINQ/phoenix/blob/3749b0817d60b0a17a97d21338e2d9038efb2d9e/phoenix-shared/src/commonMain/kotlin/fr.acinq.phoenix/managers/SendManager.kt) |
+| **BlueWallet** | Confirmed | Confirmed | Unknown | Confirmed | Confirmed | Unknown | When a combined Bitcoin and Lightning request is detected, BlueWallet opens wallet selection. The selected wallet’s chain determines whether the on-chain or Lightning route is used. | Source-code trace | [BlueWallet deeplink-schema-match.ts](https://github.com/BlueWallet/BlueWallet/blob/acf9cd068572c3712f8f409ce8a19aaca689a7e0/class/deeplink-schema-match.ts) |
+
+---
+
+## Pending Investigation
+
+The following wallets require further research and code traces to verify their exact support matrices and selection policies. Cells are marked **Unknown** per the evidence policy until primary code links or specifications are mapped.
+
+| Wallet | On-chain | BOLT 11 | BOLT 12 | BIP 321 | Payjoin | Silent Payments | Multi-method selection behaviour | Evidence strength |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Phoenix** | Confirmed | Confirmed | Confirmed | Confirmed | Unsupported | Unsupported | Automatically prioritizes Lightning / BOLT 12 over on-chain when both are offered in a unified URI. | Phoenix v2.x documentation & client tests. |
-| **Sparrow** | Confirmed | Unsupported | Unsupported | Confirmed | Confirmed | Confirmed | Defaults to Payjoin if the URI contains a Payjoin endpoint; otherwise defaults to Silent Payments or standard on-chain based on address. User can manually choose. | Sparrow release notes and user manual. |
-| **BlueWallet** | Confirmed | Confirmed | Unsupported | Confirmed | Confirmed | Unsupported | Automatically selects Lightning over on-chain if a `lightning` query parameter is present in the URI. | BlueWallet user guide and parsing code. |
-| **Nunchuk** | Confirmed | Unsupported | Unsupported | Confirmed | Unsupported | Confirmed | Defaults to standard on-chain, but parses and allows sending to BIP 352 Silent Payment destinations. | Nunchuk release notes. |
-| **Zeus** | Confirmed | Confirmed | Unknown | Unknown | Unknown | Unknown | Not yet investigated | Not yet investigated. |
-| **Blockstream Green** | Confirmed | Unknown | Unknown | Unknown | Unknown | Unknown | Not yet investigated | Not yet investigated. |
-| **Muun** | Confirmed | Confirmed | Unknown | Unknown | Unknown | Unknown | Not yet investigated | Not yet investigated. |
+| **Sparrow** | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unverified |
+| **Nunchuk** | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unverified |
+| **Zeus** | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unverified |
+| **Blockstream Green** | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unverified |
+| **Muun** | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unverified |
