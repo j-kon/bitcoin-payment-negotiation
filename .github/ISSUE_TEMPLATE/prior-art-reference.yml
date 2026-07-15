@@ -1,0 +1,52 @@
+name: Prior-Art Reference
+description: Suggest an existing Bitcoin payment standard, specification, or research paper.
+labels: ["prior-art"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for contributing prior art to the research project! Please provide details below.
+  - type: input
+    id: source_name
+    attributes:
+      label: Source Name
+      placeholder: "e.g., BIP 321: Payment Request URI"
+    validations:
+      required: true
+  - type: input
+    id: source_link
+    attributes:
+      label: Source Link
+      placeholder: "e.g., https://github.com/bitcoin/bips/blob/master/bip-0321.mediawiki"
+    validations:
+      required: true
+  - type: textarea
+    id: relevant_section
+    attributes:
+      label: Relevant Section
+      placeholder: "What specific section, parameter, or paragraph of the source relates to multi-payment selection or negotiation?"
+    validations:
+      required: true
+  - type: textarea
+    id: overlap_details
+    attributes:
+      label: How it Overlaps
+      placeholder: "How does this source address the problem of selecting or negotiating between multiple payment methods? What does it cover that we are researching?"
+    validations:
+      required: true
+  - type: dropdown
+    id: invalidates_hypothesis
+    attributes:
+      label: Does this invalidate our research hypothesis?
+      description: "Our hypothesis is that defining an interoperable selection framework is necessary to prevent fingerprinting/downgrades. Does this source prove that existing methods are already sufficient?"
+      options:
+        - "No"
+        - "Yes, it defines a complete selection/negotiation protocol"
+        - "Unsure / needs discussion"
+    validations:
+      required: true
+  - type: textarea
+    id: additional_notes
+    attributes:
+      label: Additional Notes
+      placeholder: "Any other context or related materials."

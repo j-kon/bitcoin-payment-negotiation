@@ -1,0 +1,36 @@
+name: Research Feedback
+description: Provide feedback, point out flaws, or suggest corrections on our existing research documents.
+labels: ["peer-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please use this template to critique our threat model, terminology, problem statement, or other research materials.
+  - type: input
+    id: target_document
+    attributes:
+      label: Document or Claim Being Reviewed
+      placeholder: "e.g., research/threat-model.md (Threat 2: Protocol Downgrade)"
+    validations:
+      required: true
+  - type: textarea
+    id: technical_concern
+    attributes:
+      label: Technical Concern
+      placeholder: "Clearly explain the flaw, error, or oversight in our documentation or reasoning."
+    validations:
+      required: true
+  - type: textarea
+    id: suggested_correction
+    attributes:
+      label: Suggested Correction
+      placeholder: "How should we revise the document or claim to be accurate?"
+    validations:
+      required: true
+  - type: textarea
+    id: supporting_references
+    attributes:
+      label: Supporting References
+      placeholder: "Provide links to specifications, source code, or historical discussions supporting your concern."
+    validations:
+      required: true
