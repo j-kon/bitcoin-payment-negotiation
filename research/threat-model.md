@@ -10,7 +10,7 @@ We consider the following threat actors in our analysis:
 
 - **Curious Payer**: A sender who wishes to discover which payment methods or wallet brands the receiver supports, or probe the receiver's limits without completing a payment.
 - **Curious Receiver**: A merchant or recipient who seeks to identify the sender's wallet software, historical UTXOs, or active Lightning node details via the selection or negotiation flow.
-- **Network Observer**: An eavesdropper monitoring network traffic (e.g., HTTP, DNS, or Lightning onion routing) between the payer, receiver, and third-party helpers.
+- **Network Observer**: An eavesdropper monitoring network traffic (e.g., HTTP, DNS, or Lightning onion routing) between the payer, receiver, and third-party helpers. Note that a passive observer cannot alter a request.
 - **Malicious Payment-Instruction Host**: An entity hosting BIP 353 DNS records, web servers (Payjoin endpoints), or other external resources that tampers with the served payment instructions.
 - **Malicious Directory or Relay**: An intermediary node (e.g., a BIP 77 store-and-forward directory or DNS resolver) that routes negotiation messages and can drop, delay, or manipulate them.
 - **Compromised Wallet**: A payer's or receiver's wallet application that has been infected or modified to leak capabilities, private keys, or historical transaction logs.
@@ -30,10 +30,10 @@ We consider the following threat actors in our analysis:
 - **Open Questions**: Can wallets mask their capability set by randomizing selection or introducing artificial delays? Can we define a baseline standard client policy to prevent fingerprinting?
 
 ### 2. Protocol Downgrade (Removal of Preferred Instructions)
-- **Attacker**: Payment Request Manipulator or Network Observer.
+- **Attacker**: Active network attacker, Compromised payment-request host, Malicious DNS origin, Compromised clipboard, Replaced QR code, Malicious application, or Directory or relay with modification capability. (Note: A passive network observer cannot execute this attack).
 - **Attacker Capability**: Intercepting a BIP 321 payload and stripping away privacy-enhancing or low-fee instructions (like Silent Payments or BOLT 12), leaving only standard on-chain instructions.
 - **Target**: The payment request payload.
-- **Possible Impact**: Forces the payer's wallet to fall back to standard on-chain payment method, revealing UTXO ownership.
+- **Possible Impact**: May induce the wallet to offer or prefer an on-chain fallback, revealing UTXO ownership.
 - **Existing Mitigations**: Authenticated transport (like HTTPS) or a separately defined signed envelope can protect integrity. However, this project has not found a standard BIP 321 signature envelope.
 - **Open Questions**: How can a wallet verify that the received payment request has not been stripped of other options if it was scanned from an offline QR code?
 
@@ -58,13 +58,13 @@ We consider the following threat actors in our analysis:
 - **Attacker Capability**: Correlating the IP addresses and timestamps of negotiation steps (like fetching a BOLT 12 invoice or querying a Payjoin endpoint) with the final broadcast of an on-chain transaction or Lightning routing.
 - **Target**: Transaction anonymity.
 - **Possible Impact**: Connects the user's real-world identity/IP address to specific on-chain UTXOs or Lightning node IDs.
-- **Existing Mitigations**: Distinguish the metadata visible to a BOLT 12 receiver (who sees only the blinded path/payer key) from metadata visible to routing nodes or network observers (who might see timing patterns).
+- **BOLT 12 Sender Identity Details**: Blinded paths are not guaranteed to be present in every BOLT 12 offer. During payment, the receiver processes an invoice request containing protocol fields. The use of transient payer keys and blinded paths can reduce direct identity disclosure. However, metadata visibility depends on the specific offer structure and the onion-message route chosen.
+- **Existing Mitigations**: Distinguish the metadata visible to a BOLT 12 receiver from metadata visible to routing nodes or network observers.
 - **Open Questions**: Does interactive negotiation inherently leak more timing correlation data than local selection?
 
-### 6. False Security-Property Advertisements
-- **Attacker**: Malicious Payment-Instruction Host or Receiver.
-- **Attacker Capability**: Falsely claiming that a specific payment instruction supports a higher security level or custody model than it actually does.
-- **Target**: Payer trust and funds safety.
-- **Possible Impact**: Payer sends funds to an address believing it is a self-custodial multi-sig script, but it is actually a single-key custodial endpoint. This is a prospective threat only if a future negotiation format introduces self-reported security metadata.
-- **Existing Mitigations**: Client-side verification of addresses, scripts, and public keys. Note that transaction outputs cannot always prove custody or trust models (e.g. multi-sig vs. custodial wallets).
-- **Open Questions**: How can a wallet safely represent and compare trust and custody models without misleading the user?
+---
+
+## Future Design Considerations
+
+### False Custody-Property Advertisements
+- **Threat**: A recipient or directory service falsely claims that a specific payment instruction supports a higher security level or custody model than it actually does. This is a prospective threat only if a future negotiation format introduces self-reported security metadata. Note that transaction outputs cannot always prove custody or trust models (e.g. multi-sig vs. custodial wallets).

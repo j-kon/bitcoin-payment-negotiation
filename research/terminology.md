@@ -13,7 +13,7 @@ A specific, self-contained set of parameters directing how to construct and send
 A wrapper, URI, or payload that encapsulates one or more payment instructions. A [BIP 321](prior-art.md) URI is an example of a payment request that can carry multiple payment instructions.
 
 ### Payment Method
-The protocol or rail through which the payment will be routed (e.g., Bitcoin On-Chain, Lightning Network, Liquid Network).
+The mechanism used to satisfy a payment request, such as an ordinary on-chain transaction, Lightning payment, Silent Payment transaction, or collaborative Payjoin transaction.
 
 ### Payment Workflow
 The sequence of operational steps required by a payer and receiver to complete a transaction (e.g., scanning a static QR code, requesting an ephemeral invoice over Lightning, or collaborating on a joint transaction).
@@ -41,7 +41,7 @@ The state where a sender's capabilities overlap with the receiver's provided pay
 The autonomous, local decision-making process performed by the sender's wallet to choose a single payment instruction from a set of options already provided in the payment request. Selection does **not** involve active back-and-forth communication with the receiver at the time the choice is made.
 
 ### Negotiation
-An interactive protocol where the sender and receiver actively communicate (exchange messages or metadata) to agree on a mutually supported payment method.
+Negotiation is an interactive exchange used to obtain, refine, authorize, or construct payment instructions or a transaction. Negotiation may occur within an already selected payment workflow and does not necessarily choose between payment methods.
 
 > [!IMPORTANT]
 > **Do not use "Selection" and "Negotiation" interchangeably.**
@@ -52,7 +52,7 @@ An interactive protocol where the sender and receiver actively communicate (exch
 An alternative payment instruction designated to be used if the preferred payment instruction cannot be completed or resolved (e.g., falling back to a standard on-chain address if the offer cannot be resolved or the invoice-request flow times out).
 
 ### Downgrade Attack
-An exploit where a malicious intermediary or observer tampers with a payment request to remove preferred or higher-privacy payment options (e.g., stripping a Silent Payments or Lightning instruction to force a standard, linkable on-chain transaction).
+An exploit where an active attacker capable of modifying the request tampers with a payment request to remove preferred or higher-privacy payment options (e.g., stripping a Silent Payments or Lightning instruction to force a standard, linkable on-chain transaction).
 
 ### Wallet Fingerprinting
 The tracking or identification of a user's wallet software by analyzing the specific subset of optional capabilities, parameters, or heuristics it discloses during a payment request or negotiation flow.
