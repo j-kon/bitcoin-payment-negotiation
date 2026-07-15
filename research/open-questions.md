@@ -5,8 +5,8 @@ This document compiles outstanding questions identified during our exploratory p
 ---
 
 ## 1. Standards & Specifications
-- **Can existing BIP 321 fields support the required behaviour?** Can we express receiver preferences or requirements using existing URI key-value structures without breaking backward compatibility?
-- **Is a new transport mechanism unnecessary?** Can all negotiation and selection occur using existing layers (e.g., DNS, HTTP, Nostr, Lightning onion messages) rather than defining a custom network transport?
+- **Can existing BIP 321 fields support the required behaviour?** Can we express receiver preferences or requirements using existing URI key-value structures without breaking backward compatibility? Note that no "on-chain-first" or "Lightning-first" preference field is currently defined in BIP 321.
+- **Is a new transport mechanism unnecessary?** Can all negotiation and selection occur using existing layers (e.g., DNS, HTTP, Lightning onion messages) rather than defining a custom network transport?
 - **Should the receiver express preferences, requirements, or both?** How should a payment request distinguish between "I prefer method X but support Y" and "I require method Z"?
 
 ## 2. Privacy
@@ -19,7 +19,7 @@ This document compiles outstanding questions identified during our exploratory p
 - **Are fallback mechanisms secure against social engineering?** If an interactive payment fails, how can we prevent the wallet from falling back to a fraudulent address provided in the same payload?
 
 ## 4. Interoperability
-- **Which properties can be compared safely across different protocols?** Can we build a universal translation layer to compare on-chain mining fees directly against Lightning routing fees, or to compare on-chain settlement finality against Lightning instant-locking?
+- **Which properties can be compared safely across different protocols?** Can we compare on-chain mining fees directly against Lightning routing fees, or on-chain settlement finality against a successfully completed Lightning payment under Lightning's channel and routing assumptions?
 - **How do we reconcile conflicting defaults?** If the sender's wallet defaults to Lightning-first, but the receiver's request defaults to On-chain-first, how is this conflict resolved without round-trips?
 
 ## 5. User Experience (UX)
@@ -28,7 +28,7 @@ This document compiles outstanding questions identified during our exploratory p
 
 ## 6. Implementation
 - **What implementation evidence is needed before proposing a specification?** What benchmarks, simulated environments, or wallet integrations are required to prove that a proposed selection method is viable?
-- **What is the CPU and latency overhead of local selection?** For example, does computing Silent Payment outputs for multiple options introduce noticeable delays on low-powered mobile devices?
+- **What pre-selection overhead exists?** What parsing, validation, fee-estimation, and interaction work must occur before the user chooses a method, and can that pre-selection work create measurable latency or privacy leakage?
 
 ## 7. Research Validity
 - **Is a shared selection standard actually necessary?** Or should method selection remain entirely local to each wallet's proprietary heuristics?

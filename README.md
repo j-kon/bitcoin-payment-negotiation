@@ -21,15 +21,15 @@ However, when a payment request contains more than one instruction that both the
 - How does the wallet balance trade-offs between fee costs, privacy guarantees, settlement speeds, and trust assumptions?
 - Does the process of selecting a method leak identifying information about the wallet's capabilities to the receiver or network observers?
 
-Without coordination or clear guidelines, independent wallet implementations may establish fragmented policies, leading to poor user experiences, privacy leaks (wallet fingerprinting), or vulnerability to protocol downgrade attacks.
+Without coordination or clear guidelines, independent wallet implementations may establish fragmented policies, leading to inconsistent user experiences or vulnerability to protocol downgrade attacks.
 
 ## Key Research Question
 
-> **How should Bitcoin wallets privately and safely select between multiple compatible payment instructions?**
+> **When several valid payment instructions are available, what should remain local wallet policy, and what, if anything, benefits from interoperable guidance?**
 
 ## Current Hypothesis
 
-We hypothesize that defining an interoperable, privacy-preserving framework for payment instruction selection can mitigate fingerprinting risks and prevent downgrade attacks. 
+This project investigates whether shared guidance, test vectors, or implementation conventions could reduce measurable problems.
 
 Conversely, we must also test the alternative hypothesis: that local wallet policy, combined with existing specifications (such as BIP 321 and BIP 353), is already sufficient without introducing new protocols or standards.
 
@@ -53,7 +53,7 @@ Conversely, we must also test the alternative hypothesis: that local wallet poli
 
 It is important to separate the transport/representation of payment options from the decision-making process:
 1. **Payment Instructions Representation**: Protocols like [BIP 321](https://github.com/bitcoin/bips/blob/master/bip-0321.mediawiki) (or BIP 21) carry or represent the payment instructions.
-2. **Payment Instruction Selection**: This research focuses on the logic and negotiation phase—how a wallet decides *which* compatible instruction to execute from a multi-instruction payload.
+2. **Payment Instruction Selection**: This research focuses on the logic—how a wallet decides *which* compatible instruction to execute from a multi-instruction payload.
 
 ## Example Problem
 
@@ -62,7 +62,7 @@ A merchant presents a payment request containing three payment instructions:
 2. Payjoin Endpoint
 3. BOLT 12 Offer
 
-The sender's wallet supports all three. If the wallet automatically defaults to standard on-chain, it misses out on Lightning's speed or Payjoin's privacy. If it automatically queries the Payjoin endpoint, it might leak IP/UTXO data to a receiver before deciding to pay via Lightning. If it attempts to fetch a BOLT 12 invoice, it might reveal Lightning node details. 
+The sender's wallet supports all three. If the wallet automatically defaults to standard on-chain, it misses out on Lightning's speed or Payjoin's privacy. If it automatically queries the Payjoin endpoint, it might leak IP/UTXO data to a receiver before deciding to pay via Lightning. If it attempts to fetch a BOLT 12 invoice, it initiates an interactive onion-message flow whose timing and transport metadata may require analysis, while BOLT 12 is designed not to require disclosure of the payer's ordinary node identity.
 
 The wallet requires a clear, safe, and private policy to resolve this selection without exposing its capabilities or compromising user privacy.
 
@@ -92,7 +92,9 @@ bitcoin-payment-negotiation/
 │   ├── terminology.md                 # Precise definition of core concepts
 │   ├── threat-model.md                # Security and privacy threat analysis
 │   ├── open-questions.md              # Categorized outstanding research queries
-│   └── research-methodology.md        # Disciplined approach and validation rules
+│   ├── research-methodology.md        # Disciplined approach and validation rules
+│   ├── initial-findings.md            # Summary of findings and hypotheses validation
+│   └── wallet-implementation-matrix.md # Verifiable wallet support matrix
 ├── specification/
 │   └── README.md                      # Reserved for future specifications (currently empty)
 ├── examples/
@@ -109,7 +111,7 @@ We welcome technical reviews, prior-art references, threat model critiques, and 
 
 ## Prior-Art Notice
 
-We have not yet identified a common cross-protocol specification addressing this exact combination of payment-method selection and negotiation concerns. Please refer to [prior-art.md](research/prior-art.md) for details on existing standards and how they relate to this project.
+We have not yet identified a common cross-protocol specification addressing this exact combination of payment-method selection and negotiation concerns. Please refer to [prior-art.md](research/prior-art.md) for details on existing standards and how they relate to this project. Refer to [initial-findings.md](research/initial-findings.md) and the [wallet-implementation-matrix.md](research/wallet-implementation-matrix.md) for our active research findings.
 
 ## Project Status
 
