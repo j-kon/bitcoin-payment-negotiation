@@ -10,13 +10,13 @@ This document defines core concepts and terms used throughout this research proj
 A specific, self-contained set of parameters directing how to construct and send a transaction (e.g., an on-chain address with an amount, a BOLT 11 invoice, a BOLT 12 offer, or a BIP 352 Silent Payment destination).
 
 ### Payment Request
-A wrapper, URI, or payload that encapsulates one or more payment instructions. A [BIP 321](https://github.com/bitcoin/bips/blob/master/bip-0321.mediawiki) URI is an example of a payment request that can carry multiple payment instructions.
+A wrapper, URI, or payload that encapsulates one or more payment instructions. A [BIP 321](prior-art.md) URI is an example of a payment request that can carry multiple payment instructions.
 
 ### Payment Method
-The protocol or layer through which the payment will be settled (e.g., Bitcoin On-Chain, Lightning Network, Liquid Network, Payjoin).
+The protocol or rail through which the payment will be routed (e.g., Bitcoin On-Chain, Lightning Network, Liquid Network).
 
 ### Payment Workflow
-The sequence of operational steps required by a payer and receiver to complete a transaction (e.g., scanning a static QR code, requesting an ephemeral invoice over Lightning, collaborating on a joint transaction, or submitting a payment to a relay).
+The sequence of operational steps required by a payer and receiver to complete a transaction (e.g., scanning a static QR code, requesting an ephemeral invoice over Lightning, or collaborating on a joint transaction).
 
 ### Capability
 A feature, protocol, or standard supported by a wallet's software (e.g., the ability to parse BIP 352 Silent Payments, resolve BIP 353 DNS names, or execute BIP 78 Payjoin).
@@ -41,7 +41,7 @@ The state where a sender's capabilities overlap with the receiver's provided pay
 The autonomous, local decision-making process performed by the sender's wallet to choose a single payment instruction from a set of options already provided in the payment request. Selection does **not** involve active back-and-forth communication with the receiver at the time the choice is made.
 
 ### Negotiation
-An interactive protocol where the sender and receiver actively communicate (exchange messages or metadata) to agree on a mutually supported payment method. 
+An interactive protocol where the sender and receiver actively communicate (exchange messages or metadata) to agree on a mutually supported payment method.
 
 > [!IMPORTANT]
 > **Do not use "Selection" and "Negotiation" interchangeably.**
@@ -49,7 +49,7 @@ An interactive protocol where the sender and receiver actively communicate (exch
 > - **Negotiation** is interactive and bidirectional (requiring round-trip communication).
 
 ### Fallback
-An alternative payment instruction designated to be used if the preferred payment instruction cannot be completed or resolved (e.g., falling back to a standard on-chain address if the BOLT 12 host is offline).
+An alternative payment instruction designated to be used if the preferred payment instruction cannot be completed or resolved (e.g., falling back to a standard on-chain address if the offer cannot be resolved or the invoice-request flow times out).
 
 ### Downgrade Attack
 An exploit where a malicious intermediary or observer tampers with a payment request to remove preferred or higher-privacy payment options (e.g., stripping a Silent Payments or Lightning instruction to force a standard, linkable on-chain transaction).
@@ -58,16 +58,16 @@ An exploit where a malicious intermediary or observer tampers with a payment req
 The tracking or identification of a user's wallet software by analyzing the specific subset of optional capabilities, parameters, or heuristics it discloses during a payment request or negotiation flow.
 
 ### Interactive Payment
-A payment workflow requiring active, real-time communication between the payer and receiver to construct the transaction (e.g., Payjoin, BOLT 12 invoice fetching, or LNURL).
+A payment workflow requiring additional communication between the payer and receiver to construct the transaction, which may be synchronous (e.g. BIP 78 Payjoin) or asynchronous (e.g. BIP 77 Async Payjoin or BOLT 12 invoice requests).
 
 ### Non-Interactive Payment
 A payment workflow that can be executed entirely by the payer using static information provided by the receiver, without real-time communication (e.g., standard on-chain address or BIP 352 Silent Payments).
 
 ### Settlement
-The finality state of a transaction where the funds are considered secure and irreversible under the assumptions of that payment method.
+The finality state of a transaction where the funds are considered settled and secure under the specific economic and protocol assumptions of that payment method (rather than calling Bitcoin payments absolutely irreversible).
 
 ### Custody Assumption
-The trust profile associated with a payment method (e.g., self-custody on-chain, self-custody with a Lightning node, or trust in a third-party custodial provider).
+The trust profile associated with a transaction. Custody assumptions may depend on the specific wallet or service implementation, not only the encoded payment method itself (e.g. a self-custodial Lightning wallet vs. a custodial Lightning account).
 
 ### Receiver Availability
-The requirement for the receiver to be online or active to process or sign a transaction (e.g., interactive lightning nodes vs. offline static on-chain addresses).
+The requirement for the receiver to be online or active to process or sign a transaction (e.g., interactive Lightning nodes vs. offline static on-chain addresses).
