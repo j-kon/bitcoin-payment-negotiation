@@ -4,13 +4,13 @@ Provide a brief summary of the proposed changes, research improvements, or new d
 
 ## Contribution Guidelines Check
 
-Please confirm that this contribution adheres to our [CONTRIBUTING.md](file:///Users/jaykon/Developer/open-source/bitcoin-payment-negotiation/CONTRIBUTING.md):
+Please confirm that this contribution adheres to our [CONTRIBUTING.md](../CONTRIBUTING.md):
 
 - [ ] All factual claims include links or citations to primary sources.
 - [ ] No marketing or promotional language has been introduced.
 - [ ] The distinction between **existing behavior**, **observation**, **assumption**, **proposal**, and **open question** is clearly maintained.
 - [ ] Jargon (specifically "selection" vs. "negotiation") is applied correctly.
-- [ ] No novelty claims are made without prior-art searches documented in [prior-art.md](file:///Users/jaykon/Developer/open-source/bitcoin-payment-negotiation/research/prior-art.md).
+- [ ] No novelty claims are made without prior-art searches documented in [prior-art.md](../research/prior-art.md).
 
 ## Type of Change
 

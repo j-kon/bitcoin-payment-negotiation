@@ -1,4 +1,4 @@
-# Bitcoin Payment Negotiation
+# Bitcoin Payment Instruction Selection Research
 
 > **Exploratory Research Project**
 > 
@@ -18,24 +18,24 @@ As the Bitcoin ecosystem expands, wallets are incorporating a diverse array of p
 
 However, when a payment request contains more than one instruction that both the sender and receiver support:
 - How does the sender's wallet decide which option is the most appropriate?
-- How does the wallet balance trade-offs between fee costs, privacy guarantees, settlement speeds, and trust assumptions?
+- How does the wallet balance trade-offs between fee costs, privacy properties, settlement speeds, and trust assumptions?
 - Does the process of selecting a method leak identifying information about the wallet's capabilities to the receiver or network observers?
 
-Without coordination or clear guidelines, independent wallet implementations may establish fragmented policies, leading to poor user experiences, privacy leaks (wallet fingerprinting), or vulnerability to protocol downgrade attacks.
+Without coordination or clear guidelines, independent wallet implementations may establish fragmented policies, leading to inconsistent user experiences or vulnerability to protocol downgrade attacks.
 
 ## Key Research Question
 
-> **How should Bitcoin wallets privately and safely select between multiple compatible payment instructions?**
+> **When several valid payment instructions are available, what should remain local wallet policy, and what, if anything, benefits from interoperable guidance?**
 
 ## Current Hypothesis
 
-We hypothesize that defining an interoperable, privacy-preserving framework for payment instruction selection can mitigate fingerprinting risks and prevent downgrade attacks. 
+This project investigates whether shared guidance, test vectors, or implementation conventions could reduce measurable problems.
 
 Conversely, we must also test the alternative hypothesis: that local wallet policy, combined with existing specifications (such as BIP 321 and BIP 353), is already sufficient without introducing new protocols or standards.
 
 ## Scope
 
-- **Analysis of selection trade-offs**: Investigating privacy, fee estimation, interactivity, and settlement guarantees.
+- **Analysis of selection trade-offs**: Investigating privacy, fee estimation, interactivity, and settlement properties.
 - **Threat modeling**: Identifying attacker vectors such as wallet capability probing and intermediary downgrade attacks.
 - **Prior-art evaluation**: Cataloging existing payment protocols and how they communicate preferences.
 - **Scenario mapping**: Documenting common transaction workflows to compare selection algorithms.
@@ -53,7 +53,7 @@ Conversely, we must also test the alternative hypothesis: that local wallet poli
 
 It is important to separate the transport/representation of payment options from the decision-making process:
 1. **Payment Instructions Representation**: Protocols like [BIP 321](https://github.com/bitcoin/bips/blob/master/bip-0321.mediawiki) (or BIP 21) carry or represent the payment instructions.
-2. **Payment Instruction Selection**: This research focuses on the logic and negotiation phase—how a wallet decides *which* compatible instruction to execute from a multi-instruction payload.
+2. **Payment Instruction Selection**: This research focuses on the logic—how a wallet decides *which* compatible instruction to execute from a multi-instruction payload.
 
 ## Example Problem
 
@@ -62,18 +62,18 @@ A merchant presents a payment request containing three payment instructions:
 2. Payjoin Endpoint
 3. BOLT 12 Offer
 
-The sender's wallet supports all three. If the wallet automatically defaults to standard on-chain, it misses out on Lightning's speed or Payjoin's privacy. If it automatically queries the Payjoin endpoint, it might leak IP/UTXO data to a receiver before deciding to pay via Lightning. If it attempts to fetch a BOLT 12 invoice, it might reveal Lightning node details. 
+The wallet must choose how to proceed, but whether that choice benefits from shared guidance or should remain entirely local is an open research question. If it automatically defaults to standard on-chain, it misses out on Lightning's speed or Payjoin's privacy. If it automatically queries the Payjoin endpoint, it might leak IP/UTXO data to a receiver before deciding to pay via Lightning. If it attempts to fetch a BOLT 12 invoice, it initiates an interactive onion-message flow whose timing and transport metadata may require analysis, while BOLT 12 is designed not to require disclosure of the payer's ordinary node identity.
 
 The wallet requires a clear, safe, and private policy to resolve this selection without exposing its capabilities or compromising user privacy.
 
-## Research Areas
+## Research Investigations
 
-Our current work focuses on five core areas:
-1. **Interoperability**: Ensuring wallets agree on the capabilities required for each payment method.
-2. **Privacy**: Preventing wallet fingerprinting through capability disclosure.
-3. **Security**: Hardening wallets against payment-method downgrade attacks.
-4. **Fees & Settlement**: Balancing transaction costs against settlement speed and custody assumptions.
-5. **Receiver Availability**: Addressing asynchronous payments where the receiver may be temporarily offline.
+Our current work focuses on five core investigations:
+1. **Measuring wallet implementation differences**: Comparing how various wallet clients handle combined payment instructions.
+2. **Evaluating wallet-fingerprinting hypotheses**: Analyzing the risk of unique user tracking based on optional parameter scanning and responses.
+3. **Separating request-integrity risks from selection risks**: Disentangling channel modification vectors (like parameter stripping) from local client policy decisions.
+4. **Studying fees, availability, liquidity, and interaction trade-offs**: Quantifying the economic and technical variables across payment methods.
+5. **Determining whether shared test vectors or guidance are useful**: Exploring if collaborative tooling can improve interoperability without standardizing wallet policy.
 
 ## Repository Structure
 
@@ -92,7 +92,9 @@ bitcoin-payment-negotiation/
 │   ├── terminology.md                 # Precise definition of core concepts
 │   ├── threat-model.md                # Security and privacy threat analysis
 │   ├── open-questions.md              # Categorized outstanding research queries
-│   └── research-methodology.md        # Disciplined approach and validation rules
+│   ├── research-methodology.md        # Disciplined approach and validation rules
+│   ├── initial-findings.md            # Summary of findings and hypotheses validation
+│   └── wallet-implementation-matrix.md # Verifiable wallet support matrix
 ├── specification/
 │   └── README.md                      # Reserved for future specifications (currently empty)
 ├── examples/
@@ -105,11 +107,11 @@ bitcoin-payment-negotiation/
 
 ## How to Contribute
 
-We welcome technical reviews, prior-art references, threat model critiques, and implementation feedback. Please read [CONTRIBUTING.md](file:///Users/jaykon/Developer/open-source/bitcoin-payment-negotiation/CONTRIBUTING.md) to understand how to format and submit your contributions.
+We welcome technical reviews, prior-art references, threat model critiques, and implementation feedback. Please read [CONTRIBUTING.md](CONTRIBUTING.md) to understand how to format and submit your contributions.
 
 ## Prior-Art Notice
 
-We have not yet identified a common cross-protocol specification addressing this exact combination of payment-method selection and negotiation concerns. Please refer to [prior-art.md](file:///Users/jaykon/Developer/open-source/bitcoin-payment-negotiation/research/prior-art.md) for details on existing standards and how they relate to this project.
+We have not yet identified a common cross-protocol specification addressing this exact combination of payment-method selection and negotiation concerns. Please refer to [prior-art.md](research/prior-art.md) for details on existing standards and how they relate to this project. Refer to [initial-findings.md](research/initial-findings.md) and the [wallet-implementation-matrix.md](research/wallet-implementation-matrix.md) for our active research findings.
 
 ## Project Status
 
@@ -117,4 +119,4 @@ This project is currently in the **exploratory research phase**. No protocol sch
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](file:///Users/jaykon/Developer/open-source/bitcoin-payment-negotiation/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
