@@ -1,0 +1,21 @@
+# OS files
+.DS_Store
+Thumbs.db
+db.db-journal
+
+# IDE files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Local agent configurations and logs
+.agents/
+.gemini/
+/brain/
+/artifacts/
+/scratch/
+*.log

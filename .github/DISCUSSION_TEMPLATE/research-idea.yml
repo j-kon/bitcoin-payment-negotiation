@@ -1,0 +1,17 @@
+title: "[Research Idea] Brief description of the idea"
+labels: ["idea"]
+body: |
+  ## Summary
+  Describe the research idea or proposal in 2-3 sentences.
+  
+  ## Problem Being Addressed
+  Which gap, fingerprinting vector, downgrade attack, or selection issue does this address?
+  
+  ## Proposed Approach
+  Explain how this idea works and how it integrates with existing standards (such as BIP 321 or BIP 353).
+  
+  ## Known Trade-offs / Drawbacks
+  What are the privacy, complexity, or user experience trade-offs of this approach?
+  
+  ## References & Prior Art
+  Provide links to any relevant specifications, codebases, or discussions that inspired this idea.

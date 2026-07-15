@@ -1,0 +1,43 @@
+name: Implementation Example
+description: Document how an existing Bitcoin wallet handles multiple payment instructions.
+labels: ["implementation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Help us document real-world wallet behaviors. Please fill out the details of the wallet implementation below.
+  - type: input
+    id: wallet_name
+    attributes:
+      label: Wallet or Project Name
+      placeholder: "e.g., Phoenix, BlueWallet, Sparrow"
+    validations:
+      required: true
+  - type: textarea
+    id: supported_methods
+    attributes:
+      label: Supported Payment Methods
+      placeholder: "e.g., On-chain, BIP 352 (Silent Payments), BOLT 11, BOLT 12, Payjoin"
+    validations:
+      required: true
+  - type: textarea
+    id: current_behavior
+    attributes:
+      label: Current Selection Behaviour
+      placeholder: "How does the wallet decide which payment method to use when multiple are present? (e.g., automatically pays Lightning if present; defaults to on-chain; prompts the user with choices)."
+    validations:
+      required: true
+  - type: input
+    id: source_link
+    attributes:
+      label: Source Code or Documentation Link
+      placeholder: "Link to parser logic, UX code, or documentation if available."
+    validations:
+      required: false
+  - type: textarea
+    id: observations
+    attributes:
+      label: Privacy or Interoperability Observations
+      placeholder: "Have you noticed any wallet fingerprinting vectors, IP leaks during resolution, or failure modes?"
+    validations:
+      required: false
